@@ -12,17 +12,17 @@ interface Props {
 
 export function Item({ data, removeTask, toggleTaskStatus }: Props) {
   function handleTaskToggle() {
-    toggleTaskStatus({ id: data.id, value: !data.isChecked })
+    toggleTaskStatus({ id: data.id, value: !data.completed })
   }
 
   function handleRemove() {
     removeTask(data.id)
   }
 
-  const checkboxCheckedClassname = data.isChecked
+  const checkboxCheckedClassname = data.completed
     ? styles['checkbox-checked']
     : styles['checkbox-unchecked']
-  const paragraphCheckedClassname = data.isChecked
+  const paragraphCheckedClassname = data.completed
     ? styles['paragraph-checked']
     : ''
 
@@ -30,13 +30,13 @@ export function Item({ data, removeTask, toggleTaskStatus }: Props) {
     <div className={styles.container}>
       <div>
         <label htmlFor="checkbox" onClick={handleTaskToggle}>
-          <input readOnly type="checkbox" checked={data.isChecked} />
+          <input readOnly type="checkbox" checked={data.completed} />
           <span className={`${styles.checkbox} ${checkboxCheckedClassname}`}>
-            {data.isChecked && <Check size={12} />}
+            {data.completed && <Check size={12} />}
           </span>
 
           <p className={`${styles.paragraph} ${paragraphCheckedClassname}`}>
-            {data.text}
+            {data.todo}
           </p>
         </label>
       </div>

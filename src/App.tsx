@@ -1,5 +1,5 @@
 import { PlusCircle } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import styles from './App.module.css'
 
@@ -9,19 +9,34 @@ import { Input } from './components/Input'
 import { Empty } from './components/List/Empty'
 import { Header as ListHeader } from './components/List/Header'
 import { Item } from './components/List/Item'
+import { api } from './libs/axios'
 
 export interface ITask {
   id: number
-  text: string
-  isChecked: boolean
+  userId?: number
+  todo: string
+  completed: boolean
 }
 
 export function App() {
   const [tasks, setTasks] = useState<ITask[]>([])
   const [inputValue, setInputValue] = useState('')
 
+  async function getTodos() {
+    await api
+      .get('/todos?limit=10')
+      .then((response) => {
+        setTasks(response.data.todos)
+        console.log('[RESPONSE][GET TODOS] ', response)
+      })
+      .catch((error) => {
+        setTasks([])
+        console.log('[ERROR][GET TODOS] ', error)
+      })
+  }
+
   const checkedTasksCounter = tasks.reduce((prevValue, currentTask) => {
-    if (currentTask.isChecked) {
+    if (currentTask.completed) {
       return prevValue + 1
     }
 
@@ -35,8 +50,8 @@ export function App() {
 
     const newTask: ITask = {
       id: new Date().getTime(),
-      text: inputValue,
-      isChecked: false,
+      todo: inputValue,
+      completed: false,
     }
 
     setTasks((state) => [...state, newTask])
@@ -56,7 +71,7 @@ export function App() {
   function handleToggleTask({ id, value }: { id: number; value: boolean }) {
     const updatedTasks = tasks.map((task) => {
       if (task.id === id) {
-        return { ...task, isChecked: value }
+        return { ...task, completed: value }
       }
 
       return { ...task }
@@ -64,6 +79,10 @@ export function App() {
 
     setTasks(updatedTasks)
   }
+
+  useEffect(() => {
+    getTodos()
+  }, [])
 
   return (
     <main>
